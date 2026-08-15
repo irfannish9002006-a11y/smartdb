@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Smart DB</title>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: white;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: #1f2937;
+      padding: 22px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .title {
+      font-size: 16px;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+
+    .value {
+      text-align: center;
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    #mqttStatus {
+      font-size: 18px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    #ssrStatus {
+      font-size: 42px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 18px;
+      border-radius: 12px;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+
+    .btn-on {
+      background: #22c55e;
+      color: white;
+    }
+
+    .btn-off {
+      background: #ef4444;
+      color: white;
+    }
+
+    .connected {
+      color: #22c55e;
+    }
+
+    .disconnected {
+      color: #ef4444;
+    }
+
+    .connecting {
+      color: #f59e0b;
+    }
+
+    .footer {
+      text-align: center;
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+  <h1>⚡ Smart DB</h1>
+
+
+  <!-- MQTT STATUS -->
+  <div class="card">
+
+    <div class="title">
+      MQTT Connection
+    </div>
+
+    <div id="mqttStatus" class="connecting">
+      Connecting...
+    </div>
+
+  </div>
+
+
+  <!-- SSR -->
+  <div class="card">
+
+    <div class="title">
+      SSR Status
+    </div>
+
+    <div id="ssrStatus" class="value">
+      OFF
+    </div>
+
+    <button class="btn-on" onclick="turnOn()">
+      TURN ON
+    </button>
+
+    <button class="btn-off" onclick="turnOff()">
+      TURN OFF
+    </button>
+
+  </div>
+
+
+  <!-- CURRENT -->
+  <div class="card">
+
+    <div class="title">
+      Current
+    </div>
+
+    <div id="currentValue" class="value">
+      0.00 A
+    </div>
+
+  </div>
+
+
+  <div class="footer">
+    Smart DB IoT Monitoring System
+  </div>
+
+</div>
+
+
+
+<script>
+
+// =======================================
+// HIVEMQ CLOUD
+// =======================================
+
+const MQTT_HOST =
+  "c35c737433a643708ea3ff0497f75990.s1.eu.hivemq.cloud";
+
+// WebSocket Secure
+const MQTT_PORT = 8884;
+
+// BUAT CREDENTIAL KHAS UNTUK WEB
+const MQTT_USERNAME = "smartdbweb";
+
+const MQTT_PASSWORD = "PASSWORD_WEB_MQTT_KAU";
+
+
+// =======================================
+// TOPICS
+// =======================================
+
+const TOPIC_COMMAND =
+  "smartdb/ssr/command";
+
+const TOPIC_STATUS =
+  "smartdb/ssr/status";
+
+const TOPIC_CURRENT =
+  "smartdb/current";
+
+
+// =======================================
+// RANDOM CLIENT ID
+// =======================================
+
+const clientId =
+  "SmartDB-Web-" +
+  Math.random()
+    .toString(16)
+    .substring(2, 10);
+
+
+// =======================================
+// CONNECT MQTT
+// =======================================
+
+const client = mqtt.connect(
+
+  `wss://${MQTT_HOST}:${MQTT_PORT}/mqtt`,
+
+  {
+    username: MQTT_USERNAME,
+    password: MQTT_PASSWORD,
+
+    clientId: clientId,
+
+    clean: true,
+
+    connectTimeout: 10000,
+
+    reconnectPeriod: 3000
+  }
+
+);
+
+
+// =======================================
+// MQTT CONNECTED
+// =======================================
+
+client.on("connect", function () {
+
+  console.log("HiveMQ Connected");
+
+  const status =
+    document.getElementById("mqttStatus");
+
+  status.innerText = "CONNECTED";
+
+  status.className = "connected";
+
+
+  // Subscribe SSR status
+  client.subscribe(
+    TOPIC_STATUS,
+    { qos: 0 }
+  );
+
+
+  // Subscribe current
+  client.subscribe(
+    TOPIC_CURRENT,
+    { qos: 0 }
+  );
+
+});
+
+
+// =======================================
+// MQTT MESSAGE
+// =======================================
+
+client.on(
+  "message",
+  function (topic, message) {
+
+    const data =
+      message.toString();
+
+    console.log(
+      topic,
+      data
+    );
+
+
+    // ==============================
+    // SSR STATUS
+    // ==============================
+
+    if (topic === TOPIC_STATUS) {
+
+      document.getElementById(
+        "ssrStatus"
+      ).innerText = data;
+
+    }
+
+
+    // ==============================
+    // CURRENT
+    // ==============================
+
+    if (topic === TOPIC_CURRENT) {
+
+      const current =
+        parseFloat(data);
+
+      if (!isNaN(current)) {
+
+        document.getElementById(
+          "currentValue"
+        ).innerText =
+          current.toFixed(2) + " A";
+
+      }
+
+    }
+
+  }
+);
+
+
+// =======================================
+// CONNECTION LOST
+// =======================================
+
+client.on("offline", function () {
+
+  const status =
+    document.getElementById("mqttStatus");
+
+  status.innerText =
+    "OFFLINE";
+
+  status.className =
+    "disconnected";
+
+});
+
+
+// =======================================
+// RECONNECT
+// =======================================
+
+client.on("reconnect", function () {
+
+  const status =
+    document.getElementById("mqttStatus");
+
+  status.innerText =
+    "RECONNECTING...";
+
+  status.className =
+    "connecting";
+
+});
+
+
+// =======================================
+// MQTT ERROR
+// =======================================
+
+client.on("error", function (error) {
+
+  console.error(
+    "MQTT Error:",
+    error
+  );
+
+  const status =
+    document.getElementById("mqttStatus");
+
+  status.innerText =
+    "CONNECTION ERROR";
+
+  status.className =
+    "disconnected";
+
+});
+
+
+// =======================================
+// SSR ON
+// =======================================
+
+function turnOn() {
+
+  if (!client.connected) {
+
+    alert(
+      "MQTT belum connected"
+    );
+
+    return;
+
+  }
+
+  client.publish(
+    TOPIC_COMMAND,
+    "ON",
+    {
+      qos: 0,
+      retain: false
+    }
+  );
+
+}
+
+
+// =======================================
+// SSR OFF
+// =======================================
+
+function turnOff() {
+
+  if (!client.connected) {
+
+    alert(
+      "MQTT belum connected"
+    );
+
+    return;
+
+  }
+
+  client.publish(
+    TOPIC_COMMAND,
+    "OFF",
+    {
+      qos: 0,
+      retain: false
+    }
+  );
+
+}
+
+</script>
+
+</body>
+</html>
