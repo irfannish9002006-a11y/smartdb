@@ -15,71 +15,38 @@
 
     body {
       margin: 0;
-      padding: 20px;
+      padding: 18px;
       font-family: Arial, sans-serif;
       background: #111827;
       color: white;
     }
 
     .container {
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .card {
       background: #1f2937;
-      padding: 22px;
+      padding: 20px;
       border-radius: 16px;
-      margin-bottom: 18px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      margin-bottom: 16px;
     }
 
-    .title {
-      font-size: 16px;
-      color: #9ca3af;
-      margin-bottom: 10px;
-    }
-
-    .value {
+    .card h2 {
+      margin-top: 0;
       text-align: center;
-      font-size: 36px;
-      font-weight: bold;
     }
 
-    #mqttStatus {
+    .mqtt {
+      text-align: center;
       font-size: 18px;
-      text-align: center;
       font-weight: bold;
-    }
-
-    #ssrStatus {
-      font-size: 42px;
-    }
-
-    button {
-      width: 100%;
-      border: none;
-      padding: 18px;
-      border-radius: 12px;
-      font-size: 20px;
-      font-weight: bold;
-      margin-top: 12px;
-      cursor: pointer;
-    }
-
-    .btn-on {
-      background: #22c55e;
-      color: white;
-    }
-
-    .btn-off {
-      background: #ef4444;
-      color: white;
     }
 
     .connected {
@@ -94,116 +61,294 @@
       color: #f59e0b;
     }
 
+    .status {
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      margin: 12px 0;
+    }
+
+    .current {
+      text-align: center;
+      font-size: 36px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .on {
+      background: #22c55e;
+      color: white;
+    }
+
+    .off {
+      background: #ef4444;
+      color: white;
+    }
+
+    .master {
+      border: 2px solid #374151;
+    }
+
     .footer {
       text-align: center;
-      color: #6b7280;
+      color: #9ca3af;
       font-size: 12px;
-      margin-top: 25px;
+      margin-top: 20px;
     }
   </style>
 </head>
-
 
 <body>
 
 <div class="container">
 
-  <h1>⚡ Smart DB</h1>
+  <h1>⚡ SMART DB</h1>
 
-
-  <!-- MQTT STATUS -->
+  <!-- MQTT -->
   <div class="card">
+    <div>MQTT Connection</div>
 
-    <div class="title">
-      MQTT Connection
+    <div
+      id="mqttStatus"
+      class="mqtt connecting">
+      CONNECTING...
     </div>
-
-    <div id="mqttStatus" class="connecting">
-      Connecting...
-    </div>
-
   </div>
 
 
-  <!-- SSR -->
-  <div class="card">
+  <!-- MASTER -->
+  <div class="card master">
 
-    <div class="title">
-      SSR Status
-    </div>
+    <h2>MASTER CONTROL</h2>
 
-    <div id="ssrStatus" class="value">
+    <div
+      id="masterStatus"
+      class="status">
       OFF
     </div>
 
-    <button class="btn-on" onclick="turnOn()">
-      TURN ON
-    </button>
+    <div class="buttons">
 
-    <button class="btn-off" onclick="turnOff()">
-      TURN OFF
-    </button>
+      <button
+        class="on"
+        onclick="masterON()">
+        ALL ON
+      </button>
+
+      <button
+        class="off"
+        onclick="masterOFF()">
+        ALL OFF
+      </button>
+
+    </div>
 
   </div>
 
 
-  <!-- CURRENT -->
+  <!-- LOAD 1 -->
   <div class="card">
 
-    <div class="title">
-      Current
+    <h2>LOAD 1</h2>
+
+    <div>
+      Status:
+      <span id="status1">
+        OFF
+      </span>
     </div>
 
-    <div id="currentValue" class="value">
+    <div
+      id="current1"
+      class="current">
       0.00 A
+    </div>
+
+    <div class="buttons">
+
+      <button
+        class="on"
+        onclick="load1ON()">
+        ON
+      </button>
+
+      <button
+        class="off"
+        onclick="load1OFF()">
+        OFF
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- LOAD 2 -->
+  <div class="card">
+
+    <h2>LOAD 2</h2>
+
+    <div>
+      Status:
+      <span id="status2">
+        OFF
+      </span>
+    </div>
+
+    <div
+      id="current2"
+      class="current">
+      0.00 A
+    </div>
+
+    <div class="buttons">
+
+      <button
+        class="on"
+        onclick="load2ON()">
+        ON
+      </button>
+
+      <button
+        class="off"
+        onclick="load2OFF()">
+        OFF
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- LOAD 3 -->
+  <div class="card">
+
+    <h2>LOAD 3</h2>
+
+    <div>
+      Status:
+      <span id="status3">
+        OFF
+      </span>
+    </div>
+
+    <div
+      id="current3"
+      class="current">
+      0.00 A
+    </div>
+
+    <div class="buttons">
+
+      <button
+        class="on"
+        onclick="load3ON()">
+        ON
+      </button>
+
+      <button
+        class="off"
+        onclick="load3OFF()">
+        OFF
+      </button>
+
     </div>
 
   </div>
 
 
   <div class="footer">
-    Smart DB IoT Monitoring System
+    Smart DB IoT Monitoring & Control
   </div>
 
 </div>
 
 
-
 <script>
 
-// =======================================
-// HIVEMQ CLOUD
-// =======================================
+// =====================================================
+// HIVEMQ WEBSOCKET
+// =====================================================
 
 const MQTT_URL =
   "wss://c35c737433a643708ea3ff0497f75990.s1.eu.hivemq.cloud:8884/mqtt";
 
-// WebSocket Secure
-const MQTT_PORT = 8884;
 
-// BUAT CREDENTIAL KHAS UNTUK WEB
-const MQTT_USERNAME = "smartdbweb";
+// =====================================================
+// WEB MQTT CREDENTIAL
+// =====================================================
 
-const MQTT_PASSWORD = "naelcantik06";
+// GUNA CREDENTIAL WEB HIVEMQ
+const MQTT_USERNAME =
+  "smartdbweb";
 
-
-// =======================================
-// TOPICS
-// =======================================
-
-const TOPIC_COMMAND =
-  "smartdb/ssr/command";
-
-const TOPIC_STATUS =
-  "smartdb/ssr/status";
-
-const TOPIC_CURRENT =
-  "smartdb/current";
+const MQTT_PASSWORD =
+  "naelcantik06";
 
 
-// =======================================
-// RANDOM CLIENT ID
-// =======================================
+// =====================================================
+// MQTT TOPICS
+// =====================================================
+
+// MASTER
+const MASTER_COMMAND =
+  "smartdb/master/command";
+
+const MASTER_STATUS =
+  "smartdb/master/status";
+
+
+// LOAD 1
+const SSR1_COMMAND =
+  "smartdb/ssr1/command";
+
+const SSR1_STATUS =
+  "smartdb/ssr1/status";
+
+const CURRENT1 =
+  "smartdb/current1";
+
+
+// LOAD 2
+const SSR2_COMMAND =
+  "smartdb/ssr2/command";
+
+const SSR2_STATUS =
+  "smartdb/ssr2/status";
+
+const CURRENT2 =
+  "smartdb/current2";
+
+
+// LOAD 3
+const SSR3_COMMAND =
+  "smartdb/ssr3/command";
+
+const SSR3_STATUS =
+  "smartdb/ssr3/status";
+
+const CURRENT3 =
+  "smartdb/current3";
+
+
+// =====================================================
+// CLIENT ID
+// =====================================================
 
 const clientId =
   "SmartDB-Web-" +
@@ -212,218 +357,417 @@ const clientId =
     .substring(2, 10);
 
 
-// =======================================
-// CONNECT MQTT
-// =======================================
+// =====================================================
+// CONNECT HIVEMQ
+// =====================================================
 
-const client = mqtt.connect(MQTT_URL, {
-  username: "smartdbweb",
-  password: "naelcantik06",
-  clientId: "SmartDB-Web-" + Math.random().toString(16).substring(2, 10),
-  clean: true,
-  connectTimeout: 10000,
-  reconnectPeriod: 3000
-});
+const client =
+  mqtt.connect(
+    MQTT_URL,
+    {
+      username:
+        MQTT_USERNAME,
 
+      password:
+        MQTT_PASSWORD,
 
-// =======================================
-// MQTT CONNECTED
-// =======================================
+      clientId:
+        clientId,
 
-client.on("connect", function () {
+      clean:
+        true,
 
-  console.log("HiveMQ Connected");
+      connectTimeout:
+        10000,
 
-  const status =
-    document.getElementById("mqttStatus");
-
-  status.innerText = "CONNECTED";
-
-  status.className = "connected";
-
-
-  // Subscribe SSR status
-  client.subscribe(
-    TOPIC_STATUS,
-    { qos: 0 }
+      reconnectPeriod:
+        3000
+    }
   );
 
 
-  // Subscribe current
-  client.subscribe(
-    TOPIC_CURRENT,
-    { qos: 0 }
-  );
-
-});
-
-
-// =======================================
-// MQTT MESSAGE
-// =======================================
+// =====================================================
+// CONNECTED
+// =====================================================
 
 client.on(
-  "message",
-  function (topic, message) {
-
-    const data =
-      message.toString();
-
+  "connect",
+  function()
+  {
     console.log(
-      topic,
-      data
+      "HiveMQ CONNECTED"
+    );
+
+    const mqttStatus =
+      document.getElementById(
+        "mqttStatus"
+      );
+
+    mqttStatus.innerText =
+      "CONNECTED";
+
+    mqttStatus.className =
+      "mqtt connected";
+
+
+    // SUBSCRIBE MASTER
+    client.subscribe(
+      MASTER_STATUS
     );
 
 
-    // ==============================
-    // SSR STATUS
-    // ==============================
+    // SUBSCRIBE LOAD 1
+    client.subscribe(
+      SSR1_STATUS
+    );
 
-    if (topic === TOPIC_STATUS) {
-
-      document.getElementById(
-        "ssrStatus"
-      ).innerText = data;
-
-    }
+    client.subscribe(
+      CURRENT1
+    );
 
 
-    // ==============================
-    // CURRENT
-    // ==============================
+    // SUBSCRIBE LOAD 2
+    client.subscribe(
+      SSR2_STATUS
+    );
 
-    if (topic === TOPIC_CURRENT) {
+    client.subscribe(
+      CURRENT2
+    );
 
-      const current =
-        parseFloat(data);
 
-      if (!isNaN(current)) {
+    // SUBSCRIBE LOAD 3
+    client.subscribe(
+      SSR3_STATUS
+    );
 
-        document.getElementById(
-          "currentValue"
-        ).innerText =
-          current.toFixed(2) + " A";
-
-      }
-
-    }
-
+    client.subscribe(
+      CURRENT3
+    );
   }
 );
 
 
-// =======================================
-// CONNECTION LOST
-// =======================================
+// =====================================================
+// RECEIVE MQTT
+// =====================================================
 
-client.on("offline", function () {
-
-  const status =
-    document.getElementById("mqttStatus");
-
-  status.innerText =
-    "OFFLINE";
-
-  status.className =
-    "disconnected";
-
-});
+client.on(
+  "message",
+  function(
+    topic,
+    message
+  )
+  {
+    const data =
+      message.toString();
 
 
-// =======================================
-// RECONNECT
-// =======================================
-
-client.on("reconnect", function () {
-
-  const status =
-    document.getElementById("mqttStatus");
-
-  status.innerText =
-    "RECONNECTING...";
-
-  status.className =
-    "connecting";
-
-});
+    // MASTER STATUS
+    if (
+      topic ===
+      MASTER_STATUS
+    )
+    {
+      document.getElementById(
+        "masterStatus"
+      ).innerText =
+        data;
+    }
 
 
-// =======================================
-// MQTT ERROR
-// =======================================
-
-client.on("error", function (error) {
-
-  console.error(
-    "MQTT Error:",
-    error
-  );
-
-  const status =
-    document.getElementById("mqttStatus");
-
-  status.innerText =
-    "CONNECTION ERROR";
-
-  status.className =
-    "disconnected";
-
-});
+    // LOAD 1 STATUS
+    if (
+      topic ===
+      SSR1_STATUS
+    )
+    {
+      document.getElementById(
+        "status1"
+      ).innerText =
+        data;
+    }
 
 
-// =======================================
-// SSR ON
-// =======================================
+    // CURRENT 1
+    if (
+      topic ===
+      CURRENT1
+    )
+    {
+      const value =
+        parseFloat(data);
 
-function turnOn() {
+      if (!isNaN(value))
+      {
+        document.getElementById(
+          "current1"
+        ).innerText =
+          value.toFixed(2)
+          + " A";
+      }
+    }
 
-  if (!client.connected) {
 
+    // LOAD 2 STATUS
+    if (
+      topic ===
+      SSR2_STATUS
+    )
+    {
+      document.getElementById(
+        "status2"
+      ).innerText =
+        data;
+    }
+
+
+    // CURRENT 2
+    if (
+      topic ===
+      CURRENT2
+    )
+    {
+      const value =
+        parseFloat(data);
+
+      if (!isNaN(value))
+      {
+        document.getElementById(
+          "current2"
+        ).innerText =
+          value.toFixed(2)
+          + " A";
+      }
+    }
+
+
+    // LOAD 3 STATUS
+    if (
+      topic ===
+      SSR3_STATUS
+    )
+    {
+      document.getElementById(
+        "status3"
+      ).innerText =
+        data;
+    }
+
+
+    // CURRENT 3
+    if (
+      topic ===
+      CURRENT3
+    )
+    {
+      const value =
+        parseFloat(data);
+
+      if (!isNaN(value))
+      {
+        document.getElementById(
+          "current3"
+        ).innerText =
+          value.toFixed(2)
+          + " A";
+      }
+    }
+  }
+);
+
+
+// =====================================================
+// CONNECTION STATUS
+// =====================================================
+
+client.on(
+  "offline",
+  function()
+  {
+    const status =
+      document.getElementById(
+        "mqttStatus"
+      );
+
+    status.innerText =
+      "OFFLINE";
+
+    status.className =
+      "mqtt disconnected";
+  }
+);
+
+
+client.on(
+  "reconnect",
+  function()
+  {
+    const status =
+      document.getElementById(
+        "mqttStatus"
+      );
+
+    status.innerText =
+      "CONNECTING...";
+
+    status.className =
+      "mqtt connecting";
+  }
+);
+
+
+client.on(
+  "error",
+  function(error)
+  {
+    console.error(
+      "MQTT ERROR:",
+      error
+    );
+
+    const status =
+      document.getElementById(
+        "mqttStatus"
+      );
+
+    status.innerText =
+      "CONNECTION ERROR";
+
+    status.className =
+      "mqtt disconnected";
+  }
+);
+
+
+// =====================================================
+// CHECK CONNECTION
+// =====================================================
+
+function checkMQTT()
+{
+  if (!client.connected)
+  {
     alert(
       "MQTT belum connected"
     );
 
-    return;
-
+    return false;
   }
 
-  client.publish(
-    TOPIC_COMMAND,
-    "ON",
-    {
-      qos: 0,
-      retain: false
-    }
-  );
-
+  return true;
 }
 
 
-// =======================================
-// SSR OFF
-// =======================================
+// =====================================================
+// MASTER CONTROL
+// =====================================================
 
-function turnOff() {
-
-  if (!client.connected) {
-
-    alert(
-      "MQTT belum connected"
-    );
-
+function masterON()
+{
+  if (!checkMQTT())
     return;
 
-  }
+  client.publish(
+    MASTER_COMMAND,
+    "ON"
+  );
+}
+
+
+function masterOFF()
+{
+  if (!checkMQTT())
+    return;
 
   client.publish(
-    TOPIC_COMMAND,
-    "OFF",
-    {
-      qos: 0,
-      retain: false
-    }
+    MASTER_COMMAND,
+    "OFF"
   );
+}
 
+
+// =====================================================
+// LOAD 1
+// =====================================================
+
+function load1ON()
+{
+  if (!checkMQTT())
+    return;
+
+  client.publish(
+    SSR1_COMMAND,
+    "ON"
+  );
+}
+
+
+function load1OFF()
+{
+  if (!checkMQTT())
+    return;
+
+  client.publish(
+    SSR1_COMMAND,
+    "OFF"
+  );
+}
+
+
+// =====================================================
+// LOAD 2
+// =====================================================
+
+function load2ON()
+{
+  if (!checkMQTT())
+    return;
+
+  client.publish(
+    SSR2_COMMAND,
+    "ON"
+  );
+}
+
+
+function load2OFF()
+{
+  if (!checkMQTT())
+    return;
+
+  client.publish(
+    SSR2_COMMAND,
+    "OFF"
+  );
+}
+
+
+// =====================================================
+// LOAD 3
+// =====================================================
+
+function load3ON()
+{
+  if (!checkMQTT())
+    return;
+
+  client.publish(
+    SSR3_COMMAND,
+    "ON"
+  );
+}
+
+
+function load3OFF()
+{
+  if (!checkMQTT())
+    return;
+
+  client.publish(
+    SSR3_COMMAND,
+    "OFF"
+  );
 }
 
 </script>
